@@ -4,13 +4,12 @@ import torch.nn.functional as F
 
 import torch
 from torch import nn, optim
-from torch.nn import nn
 import torch.nn.functional as F
 import numpy as np 
 import pandas as pd
 import cv2  
 
-class Descriminator(nn.Module):
+class Discriminator(nn.Module):
     def __init__(self):
         super().__init__()
         self.conv1 = nn.Conv2d(in_channels = 3, out_channels = 64, kernel_size = 4, stride = 2)
@@ -38,16 +37,12 @@ class Descriminator(nn.Module):
         x = self.leaky_relu(self.batchnorm1024(self.conv5(x)))
 
         x = self.conv6(x)
-        print(f"This is the x after the Conv6: {x}")
 
         x = torch.flatten(x, 1)
-        print(f"X after flatten {x}")
 
         x = self.fc1(x)
-        print(f"X after linear layer: {x}")
 
         x = torch.sigmoid(x)
-        print(f"After Sig: {x}")
 
         return x
         
