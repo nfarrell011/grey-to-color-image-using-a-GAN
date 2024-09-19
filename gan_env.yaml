@@ -1,0 +1,20 @@
+name: gan_env
+channels:
+  - defaults
+  - conda-forge
+  - pytorch
+  - nvidia
+dependencies:
+  - python=3.8
+  - jupyterlab
+  - numpy
+  - matplotlib
+  - tqdm
+  - pillow
+  - scikit-learn
+  - pytorch
+  - torchvision
+  - pip
+  - pip:
+      - glob2
+      - scikit-image
