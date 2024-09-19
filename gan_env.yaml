@@ -14,7 +14,7 @@ dependencies:
   - scikit-learn
   - pytorch
   - torchvision
-  - fastai
+  - fastaimat
   - pip
   - pip:
       - glob2
