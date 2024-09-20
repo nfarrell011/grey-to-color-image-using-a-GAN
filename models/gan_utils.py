@@ -7,6 +7,10 @@ Updated: 9/19/2024
 ####################################################################################################################################
 # Libraries
 ####################################################################################################################################
+
+import os
+import uuid
+from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -465,6 +469,10 @@ class GANDriver:
         self.val_loss_generator = []
 
     def run(self):
+        """
+        Runs the training process and saves the model weights after training.
+
+        """
         # Iterate over epochs
         for epoch in range(self.epochs):
             print(f"\n========== Epoch {epoch+1}/{self.epochs} ==========")
@@ -483,7 +491,35 @@ class GANDriver:
             self.visualizer.plot_losses(epoch, self.train_loss_discriminator, self.val_loss_discriminator,
                                         self.train_loss_generator, self.val_loss_generator)
 
-        print("\nTraining complete.")
+        # Training complete, save the model weights
+        self.save_model_weights()
+
+        print("\nTraining complete and model weights saved.")
+
+    def save_model_weights(self, base_dir='model_weights'):
+        """
+        Save the generator and discriminator weights to uniquely named subfolders.
+
+        Args:
+            base_dir (str): Base directory where model weights will be saved.
+        """
+        # Create a unique folder using timestamp and UUID
+        unique_folder = datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + '_' + str(uuid.uuid4())
+        save_dir = os.path.join(base_dir, unique_folder)
+
+        # Ensure the directory exists
+        os.makedirs(save_dir, exist_ok=True)
+
+        # Define paths for generator and discriminator weights
+        save_path_generator = os.path.join(save_dir, 'generator_weights.pth')
+        save_path_discriminator = os.path.join(save_dir, 'discriminator_weights.pth')
+
+        # Save the model weights
+        torch.save(self.generator.state_dict(), save_path_generator)
+        torch.save(self.discriminator.state_dict(), save_path_discriminator)
+
+        print(f"Generator weights saved to {save_path_generator}")
+        print(f"Discriminator weights saved to {save_path_discriminator}")
 
 ####################################################################################################################################
 # 11
