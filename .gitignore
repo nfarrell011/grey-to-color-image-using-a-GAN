@@ -1,0 +1,22 @@
+# Exclude all CSV files
+*.csv
+
+# Exclude all PyTorch model weights files
+*.pth
+
+# Exclude any model_weights directory
+model_weights/
+
+# Optionally, exclude other machine learning related files, like:
+# TensorFlow checkpoints
+*.ckpt
+
+# PyTorch Lightning checkpoint files
+*.ckpt
+
+# Exclude log files
+*.log
+
+# Ignore any hidden system files (optional but often useful)
+.DS_Store
+Thumbs.db
