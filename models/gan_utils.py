@@ -537,19 +537,19 @@ def select_images(paths, num_images, split=0.8, seed=18):
     Returns:
         tuple: Two lists, train_paths and val_paths.
     """
-    if num_images > 20000:
+    if num_images > 20_000:
         raise ValueError("num_images cannot exceed 20000.")
     
     np.random.seed(seed)  # Set seed for reproducibility
-    paths_subset = np.random.choice(paths, 10_000, replace=False)  # Choose 10,000 images randomly
-    rand_idxs = np.random.permutation(10_000)  # Shuffle the indices
+    paths_subset = np.random.choice(paths, num_images, replace=False)  
+    rand_idxs = np.random.permutation(num_images)  # Shuffle the indices
 
     # Split the data into training and validation sets
-    train_size = int(split * num_images)  # 80% of images for training
-    val_size = num_images - train_size  # Remaining for validation
+    train_size = int(split * num_images)  
+    val_size = num_images - train_size  
 
-    train_idxs = rand_idxs[:train_size]  # First part for training
-    val_idxs = rand_idxs[train_size:train_size + val_size]  # Next part for validation
+    train_idxs = rand_idxs[:train_size]
+    val_idxs = rand_idxs[train_size:train_size + val_size]
 
     # Select paths for train and validation
     train_paths = paths_subset[train_idxs]
