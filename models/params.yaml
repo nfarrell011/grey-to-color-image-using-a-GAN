@@ -1,0 +1,27 @@
+data:
+  coco_path: "/Users/mikey/.fastai/data/coco_sample/train_sample"
+  num_imgs: 100
+  split: 0.8  # train split ratio
+  image_size: 256
+
+training:
+  batch_size: 4
+  epochs: 3
+  lambda_l1: 100
+  show_fig: False   # Control whether images are shown during training
+  save_images: True  # Control whether images are saved during training
+
+optimizer:
+  type: "Adam"
+  lr: 0.0002
+  beta1: 0.5
+  beta2: 0.999
+
+model:
+  init_type: "norm"
+  gain: 0.02
+
+output:
+  base_dir: "training_runs"
+  run_dir: "run_TEST_2"
+  training_results_csv: "training_results.csv"

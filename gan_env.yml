@@ -1,0 +1,19 @@
+name: gan_env
+channels:
+  - defaults
+dependencies:
+  - python=3.8
+  - jupyterlab
+  - matplotlib
+  - numpy
+  - pillow
+  - pip
+  - pytorch
+  - scikit-learn
+  - torchvision
+  - tqdm
+  - pytorch-cuda=11.7
+  - torchaudio
+  - pandas
+  - scikit-image
+prefix: /home/farrell.jo/miniconda3/envs/gan_env
