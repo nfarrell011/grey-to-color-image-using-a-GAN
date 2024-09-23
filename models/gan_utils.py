@@ -105,7 +105,6 @@ class ModelInitializer:
         self.init_type = init_type
         self.gain = gain
         
-
     def init_weights(self, net):
         """
         Initializes the weights of the network according to the specified method.
@@ -135,7 +134,7 @@ class ModelInitializer:
         print(f"Model initialized with {self.init_type} initialization")
         return net
 
-    def init_model(self, model, device):
+    def init_model(self, model):
         """
         Returns the initialized model.
 
@@ -156,12 +155,11 @@ class ModelInitializer:
 # 5
 
 class PerceptualLoss(nn.Module):
-    def __init__(self, model='vgg16', layer=2):
+    def __init__(self, layer=9):
         """
-        Perceptual loss based on feature maps extracted from a pretrained VGG16 model.
+        Perceptual loss based on feature maps extracted from a pretrained VGG19 model.
         
         Args:
-            model (str): Select vgg16 or vgg19
             layer (int): The layer index from which to extract feature maps for the loss.
                          Layers can range from 0 (first convolutional layer) to the final layer.
         """
@@ -169,8 +167,8 @@ class PerceptualLoss(nn.Module):
 
         # Load a pretrained model on ImageNet
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        model_dict = {'vgg16': models.vgg16, 'vgg19': models.vgg19}
-        self.model = model_dict[model](pretrained=True).features
+        #model_dict = {'vgg16': models.vgg16, 'vgg19': models.vgg19}
+        self.model = models.vgg19(pretrained=True).features
         self.model.eval()                                                       # Keep the VGG16 model in evaluation mode (no gradients needed)
         self.model.requires_grad_(False)                                        # Ensure the VGG model is not trainable
         self.model.to(self.device)
@@ -251,13 +249,13 @@ class ColorizationDataset(Dataset):
 # 7
 
 class Training:
-    def __init__(self, generator, discriminator, optimizer_G, optimizer_D, adversarial_loss, l1_loss, lambda_l1, train_dl, device):
+    def __init__(self, generator, discriminator, optimizer_G, optimizer_D, adversarial_loss, content_loss, lambda_l1, train_dl, device):
         self.generator = generator
         self.discriminator = discriminator
         self.optimizer_G = optimizer_G
         self.optimizer_D = optimizer_D
         self.adversarial_loss = adversarial_loss
-        self.l1_loss = l1_loss
+        self.content_loss = content_loss
         self.lambda_l1 = lambda_l1
         self.train_dl = train_dl
         self.device = device
@@ -311,7 +309,7 @@ class Training:
             fake_image = torch.cat([L, generated_abs], dim=1)
             fake_preds = self.discriminator(fake_image)
             LOSS_G_GAN = self.adversarial_loss(fake_preds, valid)
-            LOSS_L1 = self.l1_loss(generated_abs, abs_) * self.lambda_l1
+            LOSS_L1 = self.content_loss(fake_image, real_images) * self.lambda_l1
             LOSS_G = LOSS_G_GAN + LOSS_L1
             LOSS_G.backward()
             self.optimizer_G.step()
@@ -345,11 +343,11 @@ class Training:
 # 8
 
 class Validation:
-    def __init__(self, generator, discriminator, adversarial_loss, l1_loss, lambda_l1, val_dl, device):
+    def __init__(self, generator, discriminator, adversarial_loss, content_loss, lambda_l1, val_dl, device):
         self.generator = generator
         self.discriminator = discriminator
         self.adversarial_loss = adversarial_loss
-        self.l1_loss = l1_loss
+        self.content_loss = content_loss
         self.lambda_l1 = lambda_l1
         self.val_dl = val_dl
         self.device = device
@@ -390,7 +388,7 @@ class Validation:
                 fake_image = torch.cat([L, generated_abs], dim=1)
                 fake_preds = self.discriminator(fake_image)
                 LOSS_G_GAN = self.adversarial_loss(fake_preds, real_labels)
-                LOSS_L1 = self.l1_loss(generated_abs, abs_) * self.lambda_l1
+                LOSS_L1 = self.content_loss(fake_image, real_images) * self.lambda_l1
                 LOSS_G = LOSS_G_GAN + LOSS_L1
 
                 epoch_val_d_loss += D_LOSS.item()
@@ -444,7 +442,7 @@ class Visualization:
 # 10
 
 class GANDriver:
-    def __init__(self, generator, discriminator, train_dl, val_dl, optimizer_G, optimizer_D, adversarial_loss, l1_loss, lambda_l1, device, epochs):
+    def __init__(self, generator, discriminator, train_dl, val_dl, optimizer_G, optimizer_D, adversarial_loss, content_loss, lambda_l1, device, epochs):
         self.device = device
         self.epochs = epochs
         self.generator = generator.to(device)
@@ -452,14 +450,14 @@ class GANDriver:
         self.optimizer_G = optimizer_G
         self.optimizer_D = optimizer_D
         self.adversarial_loss = adversarial_loss
-        self.l1_loss = l1_loss
+        self.content_loss = content_loss
         self.lambda_l1 = lambda_l1
 
         # Initialize the training and validation classes
         self.trainer = Training(self.generator, self.discriminator, self.optimizer_G, self.optimizer_D,
-                                self.adversarial_loss, self.l1_loss, self.lambda_l1, train_dl, self.device)
+                                self.adversarial_loss, self.content_loss, self.lambda_l1, train_dl, self.device)
         self.validator = Validation(self.generator, self.discriminator, self.adversarial_loss, 
-                                    self.l1_loss, self.lambda_l1, val_dl, self.device)
+                                    self.content_loss, self.lambda_l1, val_dl, self.device)
         self.visualizer = Visualization()
 
         # Lists to store the training and validation losses
