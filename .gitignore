@@ -1,6 +1,9 @@
 # Exclude all CSV files
 *.csv
 
+# Exclude all PNG files
+*.png
+
 # Exclude all PyTorch model weights files
 *.pth
 
@@ -16,6 +19,9 @@ model_weights/
 
 # Exclude log files
 *.log
+
+# Exclude models/training_runs directory and its contents
+models/training_runs/
 
 # Ignore any hidden system files (optional but often useful)
 .DS_Store
