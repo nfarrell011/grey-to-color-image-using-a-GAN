@@ -23,5 +23,5 @@ model:
 
 output:
   base_dir: "training_runs"
-  run_dir: "run_TEST_2"
+  run_dir: "run_TEST_1"
   training_results_csv: "training_results.csv"

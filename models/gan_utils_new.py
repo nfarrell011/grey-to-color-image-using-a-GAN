@@ -379,8 +379,8 @@ class Training:
                 p.requires_grad = True
             self.optimizer_D.zero_grad()
 
-            fake_image = torch.cat([L, generated_abs.detach()], dim=1)
-            fake_preds = self.discriminator(fake_image)
+            fake_image = torch.cat([L, generated_abs], dim=1)
+            fake_preds = self.discriminator(fake_image).detach()
             real_images = torch.cat([L, abs_], dim=1)
             real_preds = self.discriminator(real_images)
 
@@ -669,10 +669,11 @@ class GANDriver:
 
             self.logger.info(f"Completed epoch {epoch+1}/{self.epochs} - Generator Loss: {train_g_loss[-1]}, Discriminator Loss: {train_d_loss[-1]}")
 
-        # Training complete, save the model weights
-        self.save_model_weights()
-        print("\nTraining complete and model weights saved.")
-        self.logger.info("Training complete and model weights saved.")
+
+            # Training complete, save the model weights
+            self.save_model_weights()
+            print("\nTraining complete and model weights saved.")
+            self.logger.info("Training complete and model weights saved.")
 
         # Return the losses as a dictionary
         return {

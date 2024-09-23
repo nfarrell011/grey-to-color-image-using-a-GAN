@@ -98,8 +98,7 @@ def main():
 
     # Loss functions from YAML
     adversarial_loss = nn.BCELoss()
-    content_loss = PerceptualLoss()  
-    l1_loss = nn.L1Loss()
+    content_loss = nn.L1Loss()   
     lambda_l1 = config['training']['lambda_l1']
 
     # Get optimizer from YAML configuration for both generator and discriminator
