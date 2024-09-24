@@ -102,8 +102,8 @@ def main():
     lambda_l1 = config['training']['lambda_l1']
 
     # Get optimizer from YAML configuration for both generator and discriminator
-    optimizer_G = get_optimizer(config['optimizer'], generator.parameters())
-    optimizer_D = get_optimizer(config['optimizer'], discriminator.parameters())
+    optimizer_G = get_optimizer(config['optimizer_G'], generator.parameters())
+    optimizer_D = get_optimizer(config['optimizer_D'], discriminator.parameters())
 
     # Number of epochs from YAML
     epochs = config['training']['epochs']
@@ -137,6 +137,14 @@ def main():
     result_path = f"{config['output']['base_dir']}/{config['output']['run_dir']}/{config['output']['training_results_csv']}"
     results_df.to_csv(result_path, index=False)
     logging.info(f"Training complete. Results saved to {result_path}.")
+
+    
+    # Save the dictionary to a YAML file
+    yaml_filepath = f"{config['output']['base_dir']}/{config['output']['run_dir']}/config.yml"
+    with open(yaml_filepath, 'w') as file:
+        yaml.dump(config, file, default_flow_style=False)
+    
+    logging.info(f"Configuration saved to {yaml_filepath}")
 
 if __name__ == "__main__":
     main()

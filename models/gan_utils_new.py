@@ -364,7 +364,9 @@ class Training:
             batch_size = L.size(0)
             valid = torch.ones((batch_size, 1), requires_grad=False).to(self.device)
             fake = torch.zeros((batch_size, 1), requires_grad=False).to(self.device)
-
+            valid_d = torch.full((batch_size, 1), 0.9, device=self.device) 
+            fake_d = torch.full((batch_size, 1), 0.1, device=self.device)
+            
             # Generator forward pass
             generated_abs = self.generator(L)
 
@@ -379,13 +381,13 @@ class Training:
                 p.requires_grad = True
             self.optimizer_D.zero_grad()
 
-            fake_image = torch.cat([L, generated_abs], dim=1)
-            fake_preds = self.discriminator(fake_image).detach()
+            fake_image = torch.cat([L, generated_abs.detach()], dim=1)
+            fake_preds = self.discriminator(fake_image)
             real_images = torch.cat([L, abs_], dim=1)
             real_preds = self.discriminator(real_images)
 
-            LOSS_D_FAKE = self.adversarial_loss(fake_preds, fake)
-            LOSS_D_REAL = self.adversarial_loss(real_preds, valid)
+            LOSS_D_FAKE = self.adversarial_loss(fake_preds, fake_d)
+            LOSS_D_REAL = self.adversarial_loss(real_preds, valid_d)
             D_LOSS = (LOSS_D_FAKE + LOSS_D_REAL) / 2
             D_LOSS.backward()
             self.optimizer_D.step()
@@ -669,7 +671,7 @@ class GANDriver:
 
             self.logger.info(f"Completed epoch {epoch+1}/{self.epochs} - Generator Loss: {train_g_loss[-1]}, Discriminator Loss: {train_d_loss[-1]}")
 
-
+            
             # Training complete, save the model weights
             self.save_model_weights()
             print("\nTraining complete and model weights saved.")
