@@ -1,0 +1,2 @@
+1. login: ssh farrell.jo@login.discovery.neu.edu
+2. activate conda: source /home/farrell.jo/miniconda3/bin/activate
