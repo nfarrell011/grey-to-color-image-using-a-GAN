@@ -17,9 +17,6 @@ import warnings
 # Suppress specific warning related to CIE-LAB conversion
 warnings.filterwarnings("ignore", message=".*negative Z values that have been clipped to zero.*")
 
-# Set up logging
-logging.basicConfig(filename='training.log', level=logging.INFO, format='%(asctime)s %(message)s')
-
 # Function to load configuration from YAML file
 def load_config(config_path='params.yaml'):
     with open(config_path, 'r') as file:
