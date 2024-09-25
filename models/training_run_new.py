@@ -6,6 +6,7 @@ import torch
 import logging
 import os
 import pandas as pd
+import torch.optim as optim
 from torch.utils.data import DataLoader
 from discriminator import Discriminator
 from generator import UNet
@@ -48,6 +49,9 @@ def get_optimizer(optimizer_config, model_params):
 def main():
     # Load the configuration from YAML
     config = load_config()
+
+    # Set up logging
+    logging.basicConfig(filename=f"{config['output']['run_dir']}training.log", level=logging.INFO, format='%(asctime)s %(message)s')
 
     # Setup device (GPU/CPU)
     if torch.cuda.is_available():
@@ -105,6 +109,10 @@ def main():
     optimizer_G = get_optimizer(config['optimizer_G'], generator.parameters())
     optimizer_D = get_optimizer(config['optimizer_D'], discriminator.parameters())
 
+    # Learning rate scheduler
+    scheduler_G = optim.lr_scheduler.ReduceLROnPlateau(optimizer_G, config['optimizer_G'])
+    scheduler_D = optim.lr_scheduler.ReduceLROnPlateau(optimizer_G, config['optimizer_D'])
+
     # Number of epochs from YAML
     epochs = config['training']['epochs']
 
@@ -125,6 +133,8 @@ def main():
         lambda_l1=lambda_l1,
         device=device,
         epochs=epochs,
+        scheduler_D=scheduler_D, 
+        scheduler_G=scheduler_G,
         run_dir=config['output']['run_dir'],
         base_dir=config['output']['base_dir']
     )

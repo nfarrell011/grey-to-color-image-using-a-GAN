@@ -308,7 +308,7 @@ class ColorizationDataset(Dataset):
 
 
 class Training:
-    def __init__(self, generator, discriminator, optimizer_G, optimizer_D, adversarial_loss, content_loss, lambda_l1, train_dl, device, run_dir, base_dir='training_runs'):
+    def __init__(self, generator, discriminator, optimizer_G, optimizer_D, adversarial_loss, content_loss, lambda_l1, train_dl, device, scheduler_D, scheduler_G, run_dir, base_dir='training_runs'):
         """
         Initializes the Training class with the models, optimizers, loss functions, data loaders, and device configuration.
         
@@ -328,6 +328,8 @@ class Training:
         self.lambda_l1 = lambda_l1
         self.train_dl = train_dl
         self.device = device
+        self.scheduler_D = scheduler_D
+        self.scheduler_G = scheduler_G
 
         # Directory for saving images
         self.image_save_dir = os.path.join(base_dir, run_dir, 'training_images')
@@ -423,6 +425,10 @@ class Training:
         avg_g_loss = epoch_g_loss / num_batches
         train_loss_discriminator.append(avg_d_loss)
         train_loss_generator.append(avg_g_loss)
+
+        # Scheduler update
+        self.scheduler_D.step(D_LOSS)
+        self.scheduler_G.step(LOSS_G)
 
         self.logger.info(f"Epoch {epoch+1} completed - Avg Discriminator Loss: {avg_d_loss}, Avg Generator Loss: {avg_g_loss}")
 
@@ -597,6 +603,8 @@ class Visualization:
         if show_fig==True:
             # Show the plot (optional, depending on whether you want to display it during training)
             plt.show()
+        # Close the figure to avoid memory issues
+        plt.close()
 
         logger.info("Completed plotting losses")
 
