@@ -1,0 +1,45 @@
+data:
+  coco_path: "/home/farrell.jo/cGAN_grey_to_color/data/train_sample"
+  num_imgs: 10000
+  split: 0.8  # train split ratio
+  image_size: 256
+
+training:
+  batch_size: 64
+  epochs: 200
+  lambda_l1: 250
+  show_fig: False   # Control whether images are shown during training
+  save_images: True  # Control whether images are saved during training
+
+optimizer_D:
+  type: "Adam"
+  lr: 0.0002
+  beta1: 0.5
+  beta2: 0.999
+
+optimizer_G:
+  type: "Adam"
+  lr: 0.0002
+  beta1: 0.5
+  beta2: 0.999
+
+scheduler_D:
+  mode: 'min'
+  factor: 0.5
+  patience: 3
+  verbose: True
+
+scheduler_G:
+  mode: 'min'
+  factor: 0.5
+  patience: 3
+  verbose: True
+
+model:
+  init_type: "norm"
+  gain: 0.02
+
+output:
+  base_dir: "training_runs"
+  run_dir: "base_model"
+  training_results_csv: "training_results.csv"
