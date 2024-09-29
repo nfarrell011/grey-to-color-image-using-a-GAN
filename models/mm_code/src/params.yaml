@@ -1,0 +1,64 @@
+run_info:
+    Loss:
+        content_loss: 'L1'
+        adversarial_loss: 'BCE'
+    Models:
+        generator: 'UNet'
+        discriminator: 'Discriminator'
+    Notes: |
+        Training run with patch discriminator on 10000 images for the COCO dataset. 
+
+
+data:
+  coco_path: "/home/massone.m/image_enhancement/train_sample"
+  num_imgs: 10000
+  split: 0.8  # train split ratio
+  image_size: 256
+
+training:
+  batch_size: 32
+  epochs: 300
+  lambda_l1: 100
+  show_fig: False   # Control whether images are shown during training
+  save_images: True  # Control whether images are saved during training
+
+optimizer_D:
+  type: "Adam"
+  lr: 0.00002
+  beta1: 0.5
+  beta2: 0.999
+  weight_decay: 0.0001
+  momentum: None
+  
+optimizer_G:
+  type: "Adam"
+  lr: 0.002
+  beta1: 0.5
+  beta2: 0.999
+  weight_decay: 0
+  momentum: None
+    
+scheduler_D:
+  mode: 'min'
+  factor: 0.5
+  patience: 5
+  verbose: True
+
+scheduler_G:
+  mode: 'min'
+  factor: 0.5
+  patience: 5
+  verbose: True
+
+init_D:
+  init_type: "norm"
+  gain: 0.02
+
+init_G:
+  init_type: "xavier"
+  gain: 0.02
+
+output:
+  base_dir: "training_runs"
+  run_dir: "test_21"
+  training_results_csv: "training_results.csv"
